@@ -4,17 +4,22 @@ import { Search as SearchIcon, Calendar, Users, Video, FileText, Building2 } fro
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { useSearch } from '@/hooks/useSearch';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
+import { EmptyState } from '@/components/common/EmptyState';
+import { Link } from 'react-router-dom';
 
-const searchResults = [
-  { type: 'meeting', title: 'Q4 Board Review', description: 'Completed on Dec 15, 2024', icon: Calendar },
-  { type: 'participant', title: 'John Doe', description: 'Engineering - Admin', icon: Users },
-  { type: 'recording', title: 'Product Strategy Recording', description: '1h duration - Ready', icon: Video },
-  { type: 'summary', title: 'Marketing Review Summary', description: 'AI Generated - 3 action items', icon: FileText },
-  { type: 'department', title: 'Engineering Department', description: '12 members', icon: Building2 },
-];
+const iconMap: Record<string, React.ElementType> = {
+  meeting: Calendar,
+  participant: Users,
+  recording: Video,
+  summary: FileText,
+  department: Building2,
+};
 
 export default function SearchPage() {
   const [query, setQuery] = useState('');
+  const { data: results, isLoading } = useSearch(query);
 
   return (
     <motion.div
@@ -43,25 +48,41 @@ export default function SearchPage() {
         <Badge variant="outline" className="cursor-pointer">Participants</Badge>
         <Badge variant="outline" className="cursor-pointer">Recordings</Badge>
         <Badge variant="outline" className="cursor-pointer">Summaries</Badge>
-        <Badge variant="outline" className="cursor-pointer">Files</Badge>
       </div>
 
-      <div className="space-y-3">
-        {searchResults.map((result, index) => (
-          <Card key={index} className="cursor-pointer hover:shadow-md transition-shadow">
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                <result.icon className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium">{result.title}</p>
-                <p className="text-sm text-muted-foreground">{result.description}</p>
-              </div>
-              <Badge variant="outline" className="capitalize">{result.type}</Badge>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <LoadingSpinner size="lg" />
+        </div>
+      ) : !results || results.length === 0 ? (
+        <EmptyState
+          title="No results found"
+          description={query ? 'Try a different search term' : 'Start typing to search'}
+          icon={<SearchIcon className="h-12 w-12" />}
+        />
+      ) : (
+        <div className="space-y-3">
+          {results.map((result, index) => {
+            const Icon = iconMap[result.type] || FileText;
+            return (
+              <Link key={index} to={result.url}>
+                <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                  <CardContent className="p-4 flex items-center gap-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                      <Icon className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium">{result.title}</p>
+                      <p className="text-sm text-muted-foreground">{result.description}</p>
+                    </div>
+                    <Badge variant="outline" className="capitalize">{result.type}</Badge>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </motion.div>
   );
 }
