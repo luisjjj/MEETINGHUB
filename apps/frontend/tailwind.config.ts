@@ -95,6 +95,9 @@ const config: Config = {
           900: '#0b112b',
         },
       },
+      fontFamily: {
+        sans: ['var(--font-sans)'],
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
