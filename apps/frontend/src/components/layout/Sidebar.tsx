@@ -22,16 +22,16 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Calendar', href: '/calendar', icon: Calendar },
-  { name: 'Create Meeting', href: '/meetings/create', icon: PlusCircle },
-  { name: 'Participants', href: '/participants', icon: Users },
-  { name: 'Attendance', href: '/attendance', icon: UserCheck },
-  { name: 'Recordings', href: '/recordings', icon: Video },
-  { name: 'AI Workspace', href: '/ai-workspace', icon: Sparkles },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Notifications', href: '/notifications', icon: Bell },
-  { name: 'Search', href: '/search', icon: Search },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Calendar', href: '/dashboard/calendar', icon: Calendar },
+  { name: 'Create Meeting', href: '/dashboard/meetings/create', icon: PlusCircle },
+  { name: 'Participants', href: '/dashboard/participants', icon: Users },
+  { name: 'Attendance', href: '/dashboard/attendance', icon: UserCheck },
+  { name: 'Recordings', href: '/dashboard/recordings', icon: Video },
+  { name: 'AI Workspace', href: '/dashboard/ai-workspace', icon: Sparkles },
+  { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
+  { name: 'Notifications', href: '/dashboard/notifications', icon: Bell },
+  { name: 'Search', href: '/dashboard/search', icon: Search },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export function Sidebar() {
@@ -66,7 +66,7 @@ export function Sidebar() {
 
       <nav className="flex-1 space-y-1 p-2">
         {navigation.map((item) => {
-          const isActive = location.pathname === item.href;
+          const isActive = location.pathname === item.href || (item.href !== '/dashboard' && location.pathname.startsWith(item.href));
           return (
             <Link
               key={item.name}

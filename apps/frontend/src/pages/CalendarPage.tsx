@@ -66,7 +66,7 @@ export default function CalendarPage() {
           <h1 className="text-2xl font-bold">Calendar</h1>
           <p className="text-muted-foreground">View and manage your meetings</p>
         </div>
-        <Button onClick={() => navigate('/meetings/create')}>
+        <Button onClick={() => navigate('/dashboard/meetings/create')}>
           <Plus className="mr-2 h-4 w-4" />New Meeting
         </Button>
       </div>
@@ -112,7 +112,7 @@ export default function CalendarPage() {
                         <div
                           key={meeting.id}
                           className={cn('rounded px-1 py-0.5 text-xs text-white truncate cursor-pointer', meeting.color)}
-                          onClick={(e) => { e.stopPropagation(); navigate(`/meetings/${meeting.id}`); }}
+                          onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/meetings/${meeting.id}`); }}
                         >
                           {meeting.title}
                         </div>
@@ -136,7 +136,7 @@ export default function CalendarPage() {
               <div
                 key={m.id}
                 className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent/50 cursor-pointer"
-                onClick={() => navigate(`/meetings/${m.id}`)}
+                onClick={() => navigate(`/dashboard/meetings/${m.id}`)}
               >
                 <div className={cn('h-3 w-3 rounded-full', m.color)} />
                 <span className="font-medium">{m.title}</span>

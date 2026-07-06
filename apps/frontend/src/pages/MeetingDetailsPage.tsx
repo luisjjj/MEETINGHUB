@@ -43,7 +43,7 @@ export default function MeetingDetailsPage() {
     try {
       await deleteMeeting.mutateAsync(id || '');
       toast.success('Meeting deleted successfully');
-      navigate('/calendar');
+      navigate('/dashboard/calendar');
     } catch {
       toast.error('Failed to delete meeting');
     }

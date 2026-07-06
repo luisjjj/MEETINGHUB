@@ -73,7 +73,7 @@ export default function CreateMeetingPage() {
         passwordProtected: formData.passwordProtected,
       });
       toast.success('Meeting created successfully!');
-      navigate('/calendar');
+      navigate('/dashboard/calendar');
     } catch (error) {
       toast.error('Failed to create meeting');
     }
