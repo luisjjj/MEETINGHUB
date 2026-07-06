@@ -1,17 +1,22 @@
 import pg from 'pg';
 import { config } from './index';
+import { logger } from '../utils/logger';
 
 const pool = new pg.Pool({
   connectionString: config.database.url,
   ssl: { rejectUnauthorized: false },
-  max: 20,
+  max: 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 10000,
+  connectionTimeoutMillis: 15000,
+  allowExitOnIdle: true,
 });
 
 pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
+  logger.error('Unexpected error on idle database client', err);
+});
+
+pool.on('connect', () => {
+  logger.debug('New database connection established');
 });
 
 export const db = {
