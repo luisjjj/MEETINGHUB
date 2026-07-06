@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,6 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useCreateMeeting } from '@/hooks/useMeetings';
+import { useDepartments } from '@/hooks/useDepartments';
+import { toast } from 'sonner';
 
 const steps = ['Basic Info', 'Schedule', 'Participants', 'Options'];
 
@@ -15,7 +19,7 @@ export default function CreateMeetingPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    department: '',
+    departmentId: '',
     meetingType: '',
     date: '',
     startTime: '',
@@ -32,6 +36,10 @@ export default function CreateMeetingPage() {
     password: '',
   });
 
+  const createMeeting = useCreateMeeting();
+  const { data: departments } = useDepartments();
+  const navigate = useNavigate();
+
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -44,8 +52,31 @@ export default function CreateMeetingPage() {
     }
   };
 
-  const handleSubmit = () => {
-    console.log('Meeting created:', formData);
+  const handleSubmit = async () => {
+    try {
+      const startDateTime = new Date(`${formData.date}T${formData.startTime}`);
+      const endDateTime = new Date(`${formData.date}T${formData.endTime}`);
+
+      await createMeeting.mutateAsync({
+        title: formData.title,
+        description: formData.description,
+        departmentId: formData.departmentId || undefined,
+        meetingType: formData.meetingType as 'board' | 'department' | 'team' | 'one_on_one' | 'all_hands' | 'training' | 'other',
+        startTime: startDateTime.toISOString(),
+        endTime: endDateTime.toISOString(),
+        timezone: formData.timezone,
+        location: formData.location,
+        room: formData.room,
+        format: formData.format as 'virtual' | 'in_person' | 'hybrid',
+        recordingEnabled: formData.recordingEnabled,
+        waitingRoomEnabled: formData.waitingRoomEnabled,
+        passwordProtected: formData.passwordProtected,
+      });
+      toast.success('Meeting created successfully!');
+      navigate('/calendar');
+    } catch (error) {
+      toast.error('Failed to create meeting');
+    }
   };
 
   return (
@@ -107,17 +138,18 @@ export default function CreateMeetingPage() {
                 <div className="space-y-2">
                   <Label>Department</Label>
                   <Select
-                    value={formData.department}
-                    onValueChange={(value) => setFormData({ ...formData, department: value })}
+                    value={formData.departmentId}
+                    onValueChange={(value) => setFormData({ ...formData, departmentId: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select department" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="engineering">Engineering</SelectItem>
-                      <SelectItem value="marketing">Marketing</SelectItem>
-                      <SelectItem value="sales">Sales</SelectItem>
-                      <SelectItem value="hr">Human Resources</SelectItem>
+                      {departments?.map((dept) => (
+                        <SelectItem key={dept.id} value={dept.id}>
+                          {dept.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -294,7 +326,9 @@ export default function CreateMeetingPage() {
           Previous
         </Button>
         {currentStep === steps.length - 1 ? (
-          <Button onClick={handleSubmit}>Create Meeting</Button>
+          <Button onClick={handleSubmit} disabled={createMeeting.isPending}>
+            {createMeeting.isPending ? 'Creating...' : 'Create Meeting'}
+          </Button>
         ) : (
           <Button onClick={handleNext}>
             Next

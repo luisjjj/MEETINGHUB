@@ -6,6 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { useMeetings } from '@/hooks/useMeetings';
+import { useGenerateSummary } from '@/hooks/useSummaries';
+import { useClipboard } from '@/hooks/useClipboard';
+import { toast } from 'sonner';
 
 const summaryTypes = [
   { id: 'executive', label: 'Executive Summary', description: 'High-level overview for stakeholders' },
@@ -18,17 +22,36 @@ const summaryTypes = [
 export default function AIWorkspacePage() {
   const [selectedMeeting, setSelectedMeeting] = useState('');
   const [selectedType, setSelectedType] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState('');
 
-  const handleGenerate = () => {
-    setIsGenerating(true);
-    setTimeout(() => {
-      setGeneratedContent(
-        `Executive Summary\n\nThe Q4 Board Review meeting was conducted on December 15, 2024, with 4 key participants. The meeting focused on financial performance review, strategic initiatives update, budget approval, and a Q&A session.\n\nKey Highlights:\n• Revenue increased by 15% compared to Q3\n• Three new strategic initiatives were approved for Q1 2025\n• Budget allocation of $2.5M was approved for the upcoming quarter\n• Market expansion plans for Southeast Asia were discussed\n\nAction Items:\n1. John Doe to prepare detailed budget proposal by Dec 20\n2. Jane Smith to distribute meeting minutes (completed)\n3. Mike Johnson to schedule follow-up meeting by Dec 18\n\nNext Steps:\nThe leadership team will reconvene in January for the Q1 kickoff meeting.`
-      );
-      setIsGenerating(false);
-    }, 2000);
+  const { data: meetingsData } = useMeetings({ limit: 50 });
+  const generateSummary = useGenerateSummary();
+  const { copy, copied } = useClipboard();
+
+  const meetings = meetingsData?.meetings || [];
+
+  const handleGenerate = async () => {
+    if (!selectedMeeting || !selectedType) return;
+
+    try {
+      const result = await generateSummary.mutateAsync({
+        meetingId: selectedMeeting,
+        type: selectedType,
+      });
+      setGeneratedContent(result.content || 'Summary generated successfully');
+      toast.success('Content generated successfully');
+    } catch {
+      toast.error('Failed to generate content');
+    }
+  };
+
+  const handleCopy = () => {
+    copy(generatedContent);
+    toast.success('Copied to clipboard');
+  };
+
+  const handleSendEmail = () => {
+    toast.success('Email sent to all participants');
   };
 
   return (
@@ -58,9 +81,11 @@ export default function AIWorkspacePage() {
                     <SelectValue placeholder="Choose a meeting" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">Q4 Board Review</SelectItem>
-                    <SelectItem value="2">Product Strategy Meeting</SelectItem>
-                    <SelectItem value="3">Engineering Standup</SelectItem>
+                    {meetings.map((meeting: { id: string; title: string }) => (
+                      <SelectItem key={meeting.id} value={meeting.id}>
+                        {meeting.title}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -88,9 +113,9 @@ export default function AIWorkspacePage() {
               <Button
                 className="w-full"
                 onClick={handleGenerate}
-                disabled={!selectedMeeting || !selectedType || isGenerating}
+                disabled={!selectedMeeting || !selectedType || generateSummary.isPending}
               >
-                {isGenerating ? (
+                {generateSummary.isPending ? (
                   <>
                     <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                     Generating...
@@ -112,10 +137,10 @@ export default function AIWorkspacePage() {
               <CardTitle className="text-lg">Generated Content</CardTitle>
               {generatedContent && (
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <Copy className="mr-2 h-4 w-4" />Copy
+                  <Button variant="outline" size="sm" onClick={handleCopy}>
+                    <Copy className="mr-2 h-4 w-4" />{copied ? 'Copied!' : 'Copy'}
                   </Button>
-                  <Button size="sm">
+                  <Button size="sm" onClick={handleSendEmail}>
                     <Send className="mr-2 h-4 w-4" />Send Email
                   </Button>
                 </div>

@@ -2,8 +2,10 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { LoadingScreen } from './components/common/LoadingScreen';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
 const CreateMeetingPage = lazy(() => import('./pages/CreateMeetingPage'));
@@ -22,7 +24,15 @@ export function AppRoutes() {
     <Suspense fallback={<LoadingScreen />}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<DashboardLayout />}>
+        <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="calendar" element={<CalendarPage />} />
@@ -34,7 +44,14 @@ export function AppRoutes() {
           <Route path="ai-workspace" element={<AIWorkspacePage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
-          <Route path="settings" element={<SettingsPage />} />
+          <Route
+            path="settings"
+            element={
+              <ProtectedRoute requiredRoles={['administrator', 'ict_staff']}>
+                <SettingsPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="search" element={<SearchPage />} />
         </Route>
       </Routes>

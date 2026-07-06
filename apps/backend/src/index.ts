@@ -20,6 +20,7 @@ import { searchRoutes } from './routes/search.routes';
 import { userRoutes } from './routes/user.routes';
 import { departmentRoutes } from './routes/department.routes';
 import { zoomWebhookRoutes } from './webhooks/zoom.webhook';
+import { zoomRoutes } from './routes/zoom.routes';
 
 const app = express();
 
@@ -62,6 +63,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/zoom', zoomRoutes);
 
 // Webhooks
 app.use('/webhooks/zoom', zoomWebhookRoutes);

@@ -1,34 +1,64 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/dashboard';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      await login(email, password);
+      toast.success('Welcome back!');
+      navigate(from, { replace: true });
+    } catch (error: any) {
+      const msg = error?.code === 'auth/user-not-found'
+        ? 'No account found with this email'
+        : error?.code === 'auth/wrong-password'
+        ? 'Incorrect password'
+        : error?.code === 'auth/invalid-api-key'
+        ? 'Firebase API key is not configured'
+        : error?.message || 'Invalid email or password';
+      toast.error(msg);
+    } finally {
       setIsLoading(false);
-      navigate('/dashboard');
-    }, 1000);
+    }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      await loginWithGoogle();
+      toast.success('Welcome back!');
+      navigate(from, { replace: true });
+    } catch (error: any) {
+      const msg = error?.code === 'auth/popup-closed-by-user'
+        ? 'Sign-in popup was closed'
+        : error?.code === 'auth/cancelled-popup-request'
+        ? 'Sign-in was cancelled'
+        : error?.code === 'auth/invalid-api-key'
+        ? 'Firebase API key is not configured'
+        : error?.message || 'Google sign-in failed';
+      toast.error(msg);
+    } finally {
       setIsLoading(false);
-      navigate('/dashboard');
-    }, 1000);
+    }
   };
 
   return (
@@ -142,6 +172,13 @@ export default function LoginPage() {
               </svg>
               Sign in with Google
             </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              Don't have an account?{' '}
+              <Link to="/register" className="text-primary-500 hover:underline font-medium">
+                Sign up
+              </Link>
+            </p>
           </CardContent>
         </Card>
       </motion.div>

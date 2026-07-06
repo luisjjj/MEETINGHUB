@@ -33,12 +33,23 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
 
     const decodedToken = await admin.auth().verifyIdToken(token);
 
-    const result = await db.query('SELECT id, email, role FROM users WHERE firebase_uid = $1', [
+    let result = await db.query('SELECT id, email, role FROM users WHERE firebase_uid = $1', [
       decodedToken.uid,
     ]);
 
     if (result.rows.length === 0) {
-      return res.status(401).json({ message: 'User not found' });
+      const insertResult = await db.query(
+        `INSERT INTO users (firebase_uid, email, display_name, avatar_url, role)
+         VALUES ($1, $2, $3, $4, 'employee')
+         RETURNING id, email, role`,
+        [
+          decodedToken.uid,
+          decodedToken.email || '',
+          decodedToken.name || decodedToken.email?.split('@')[0] || 'User',
+          decodedToken.picture || null,
+        ]
+      );
+      result = insertResult;
     }
 
     req.user = result.rows[0];

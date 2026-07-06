@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { MeetingService } from '../services/meeting.service';
 import { AuthRequest } from '../middleware/auth';
 import { createMeetingSchema, updateMeetingSchema } from '../validators/meeting.validator';
@@ -25,7 +25,7 @@ export class MeetingController {
 
   getById = async (req: AuthRequest, res: Response) => {
     try {
-      const meeting = await this.service.getById(req.params.id);
+      const meeting = await this.service.getById(req.params.id as string);
       res.json(meeting);
     } catch (error) {
       res.status(404).json({ message: 'Meeting not found' });
@@ -45,7 +45,7 @@ export class MeetingController {
   update = async (req: AuthRequest, res: Response) => {
     try {
       const data = updateMeetingSchema.parse(req.body);
-      const meeting = await this.service.update(req.params.id, data);
+      const meeting = await this.service.update(req.params.id as string, data);
       res.json(meeting);
     } catch (error) {
       res.status(400).json({ message: error instanceof Error ? error.message : 'Failed to update meeting' });
@@ -54,7 +54,7 @@ export class MeetingController {
 
   delete = async (req: AuthRequest, res: Response) => {
     try {
-      await this.service.delete(req.params.id);
+      await this.service.delete(req.params.id as string);
       res.json({ message: 'Meeting deleted successfully' });
     } catch (error) {
       res.status(400).json({ message: 'Failed to delete meeting' });
@@ -63,7 +63,7 @@ export class MeetingController {
 
   getParticipants = async (req: AuthRequest, res: Response) => {
     try {
-      const participants = await this.service.getParticipants(req.params.id);
+      const participants = await this.service.getParticipants(req.params.id as string);
       res.json(participants);
     } catch (error) {
       res.status(500).json({ message: 'Failed to fetch participants' });
@@ -72,7 +72,7 @@ export class MeetingController {
 
   startMeeting = async (req: AuthRequest, res: Response) => {
     try {
-      const meeting = await this.service.startMeeting(req.params.id);
+      const meeting = await this.service.startMeeting(req.params.id as string);
       res.json(meeting);
     } catch (error) {
       res.status(400).json({ message: 'Failed to start meeting' });
@@ -81,7 +81,7 @@ export class MeetingController {
 
   endMeeting = async (req: AuthRequest, res: Response) => {
     try {
-      const meeting = await this.service.endMeeting(req.params.id);
+      const meeting = await this.service.endMeeting(req.params.id as string);
       res.json(meeting);
     } catch (error) {
       res.status(400).json({ message: 'Failed to end meeting' });
