@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Users, Video, Brain, BarChart3, Shield, CheckCircle } from 'lucide-react';
+import { Calendar, Users, Video, Brain, BarChart3, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
@@ -74,33 +74,38 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-28 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="inline-flex items-center gap-2 bg-primary-50 text-primary-600 rounded-full px-4 py-1.5 text-sm font-medium mb-6">
-            <CheckCircle className="h-4 w-4" />
-            Enterprise Meeting Management
-          </div>
-          <h1 className="text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight mb-6">
-            Meetings that<br />
-            <span className="text-primary-500">actually work</span>
-          </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-10">
-            Schedule, manage, and record your meetings with AI-powered summaries,
-            Zoom integration, and real-time analytics. Built for teams that value their time.
-          </p>
-          <div className="flex items-center justify-center gap-4">
-            <Button size="lg" className="text-base px-8 h-12" onClick={() => navigate('/register')}>
-              Get Started Free
-            </Button>
-            <Button size="lg" variant="outline" className="text-base px-8 h-12" onClick={() => navigate('/login')}>
-              Sign In
-            </Button>
-          </div>
-        </motion.div>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 via-transparent to-primary-500/10" />
+          <div className="hero-grid absolute inset-0" />
+          <div className="absolute top-20 left-1/4 h-96 w-96 rounded-full bg-primary-500/5 blur-3xl animate-float" />
+          <div className="absolute bottom-20 right-1/4 h-80 w-80 rounded-full bg-primary-500/8 blur-3xl animate-float-delayed" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-primary-500/3 blur-[120px]" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-32 text-center relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-5xl sm:text-6xl font-bold text-slate-900 tracking-tight mb-6">
+              Meetings that<br />
+              <span className="text-primary-500">actually work</span>
+            </h1>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-10">
+              Schedule, manage, and record your meetings with AI-powered summaries,
+              Zoom integration, and real-time analytics. Built for teams that value their time.
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button size="lg" className="text-base px-8 h-12" onClick={() => navigate('/register')}>
+                Get Started Free
+              </Button>
+              <Button size="lg" variant="outline" className="text-base px-8 h-12" onClick={() => navigate('/login')}>
+                Sign In
+              </Button>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* Stats */}
