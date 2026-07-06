@@ -46,7 +46,7 @@ export default function DashboardPage() {
             Welcome back, {user?.displayName?.split(' ')[0] || 'User'}. Here's your meeting overview.
           </p>
         </div>
-        <Link to="/meetings/create">
+              <Link to="/dashboard/meetings/create">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             New Meeting
@@ -85,7 +85,7 @@ export default function DashboardPage() {
                 <CardTitle>Upcoming Meetings</CardTitle>
                 <CardDescription>Your scheduled meetings</CardDescription>
               </div>
-              <Link to="/calendar">
+                <Link to="/dashboard/calendar">
                 <Button variant="ghost" size="sm">
                   View all <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -129,7 +129,7 @@ export default function DashboardPage() {
                 <div className="text-center py-8">
                   <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                   <p className="text-muted-foreground">No upcoming meetings</p>
-                  <Link to="/meetings/create">
+        <Link to="/dashboard/meetings/create">
                     <Button className="mt-4">
                       <Plus className="mr-2 h-4 w-4" />
                       Create Meeting
@@ -148,25 +148,25 @@ export default function DashboardPage() {
               <CardDescription>Common tasks</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Link to="/meetings/create">
+                  <Link to="/dashboard/meetings/create">
                 <Button variant="outline" className="w-full justify-start">
                   <Plus className="mr-2 h-4 w-4" />
                   Create New Meeting
                 </Button>
               </Link>
-              <Link to="/ai-workspace">
+                <Link to="/dashboard/ai-workspace">
                 <Button variant="outline" className="w-full justify-start">
                   <FileText className="mr-2 h-4 w-4" />
                   AI Workspace
                 </Button>
               </Link>
-              <Link to="/recordings">
+              <Link to="/dashboard/recordings">
                 <Button variant="outline" className="w-full justify-start">
                   <Video className="mr-2 h-4 w-4" />
                   View Recordings
                 </Button>
               </Link>
-              <Link to="/analytics">
+              <Link to="/dashboard/analytics">
                 <Button variant="outline" className="w-full justify-start">
                   <TrendingUp className="mr-2 h-4 w-4" />
                   View Analytics
@@ -197,7 +197,7 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 </div>
-                <Link to="/ai-workspace">
+              <Link to="/dashboard/ai-workspace">
                   <Button variant="outline">
                     <TrendingUp className="mr-2 h-4 w-4" />
                     Generate Now

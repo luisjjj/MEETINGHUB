@@ -32,7 +32,7 @@ export function Header() {
     try {
       await logout();
       toast.success('Logged out successfully');
-      navigate('/login');
+      navigate('/');
     } catch {
       toast.error('Failed to logout');
     }
@@ -56,7 +56,7 @@ export function Header() {
         <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
           {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
-        <Button variant="ghost" size="icon" className="relative" onClick={() => navigate('/notifications')}>
+        <Button variant="ghost" size="icon" className="relative" onClick={() => navigate('/dashboard/notifications')}>
           <Bell className="h-5 w-5" />
           {unreadCount && unreadCount > 0 && (
             <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
